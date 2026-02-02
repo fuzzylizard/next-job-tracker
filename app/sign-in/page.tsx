@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { signIn, signUp } from "@/lib/auth/auth-client";
+import { signIn } from "@/lib/auth/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -25,29 +25,29 @@ export default function SignIn() {
 
   const router = useRouter();
 
-  // async function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-  //   setError("");
-  //   setLoading(true);
+    setError("");
+    setLoading(true);
 
-  //   try {
-  //     const result = await signIn.email({
-  //       email,
-  //       password,
-  //     });
+    try {
+      const result = await signIn.email({
+        email,
+        password,
+      });
 
-  //     if (result.error) {
-  //       setError(result.error.message ?? "Failed to sign in");
-  //     } else {
-  //       router.push("/dashboard");
-  //     }
-  //   } catch (err) {
-  //     setError("An unexpected error occurred");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+      if (result.error) {
+        setError(result.error.message ?? "Failed to sign in");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="flex min-h-[calc(100vh-12rem)] items-center justify-center bg-white p-4">
@@ -60,7 +60,7 @@ export default function SignIn() {
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
-        <form onSubmit={() => {}} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <CardContent className="space-y-4">
             {error && (
               <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
