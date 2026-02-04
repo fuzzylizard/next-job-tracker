@@ -89,7 +89,7 @@ function DroppableColumn({
       </CardHeader>
 
       <CardContent className="space-y-2 pt-4 bg-gray-50/50 min-h-[400px] rounded-b-lg">
-        <CreateJobApplicationDialogue />
+        <CreateJobApplicationDialogue columnId={column._id} boardId={boardId} />
       </CardContent>
     </Card>
   );

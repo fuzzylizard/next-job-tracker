@@ -1,3 +1,5 @@
+"use client";
+
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
@@ -13,6 +15,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
+import { createJobApplication } from "@/lib/actions/job-applications";
 
 interface CreateJobApplicationDialogProps {
   columnId: string;
@@ -37,8 +40,29 @@ export default function CreateJobApplicationDialogue({
   const [open, setOpen] = useState<boolean>(false);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    try {
+      const result = await createJobApplication({
+        ...formData,
+        columnId,
+        boardId,
+        tags: formData.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag.length > 0),
+      });
+
+      if (!result.error) {
+        setFormData(INITIAL_FORM_DATA);
+        setOpen(false);
+      } else {
+        console.error("Error creating job application:", result.error);
+      }
+    } catch (error) {
+      console.error("Error adding job application:", error);
+    }
   }
 
   return (
@@ -52,6 +76,7 @@ export default function CreateJobApplicationDialogue({
           Add Job
         </Button>
       </DialogTrigger>
+
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Add Job Application</DialogTitle>
@@ -65,8 +90,10 @@ export default function CreateJobApplicationDialogue({
                 <Input
                   id="company"
                   required
-                  // value={formData.company}
-                  // onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  value={formData.company}
+                  onChange={(e) =>
+                    setFormData({ ...formData, company: e.target.value })
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -157,10 +184,13 @@ export default function CreateJobApplicationDialogue({
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
+              className="cursor-pointer"
             >
               Cancel
             </Button>
-            <Button type="submit">Add Application</Button>
+            <Button type="submit" className="cursor-pointer">
+              Add Application
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
