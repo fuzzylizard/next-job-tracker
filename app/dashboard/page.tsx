@@ -1,8 +1,29 @@
+import KanbanBoard from "@/components/kanban-board";
 import { getSession } from "@/lib/auth/auth";
-import { redirect } from "next/navigation";
 import connectDB from "@/lib/db";
 import { Board } from "@/lib/models";
-import KanbanBoard from "@/components/kanban-board";
+import { redirect } from "next/navigation";
+
+async function getBoard(userId: string) {
+  // "use cache";
+
+  await connectDB();
+
+  const boardDoc = await Board.findOne({
+    userId: userId,
+    name: "Job Hunt",
+  }).populate({
+    path: "columns",
+    populate: {
+      path: "jobApplications",
+    },
+  });
+
+  if (!boardDoc) return null;
+
+  const board = JSON.parse(JSON.stringify(boardDoc));
+  return board;
+}
 
 export default async function Dashboard() {
   const session = await getSession();
@@ -14,10 +35,7 @@ export default async function Dashboard() {
 
   await connectDB();
 
-  const board = await Board.findOne({
-    userId: session.user.id,
-    name: "Job Hunt",
-  });
+  const board = await getBoard(session.user.id);
 
   console.log("Fetched Board:", board);
 
